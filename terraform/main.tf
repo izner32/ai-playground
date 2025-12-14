@@ -56,7 +56,8 @@ resource "google_project_service" "required_apis" {
     "storage.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "iam.googleapis.com",
-    "vpcaccess.googleapis.com"
+    "vpcaccess.googleapis.com",
+    "secretmanager.googleapis.com"
   ])
 
   service            = each.key

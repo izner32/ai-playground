@@ -4,11 +4,21 @@ A GCP-based system where users interact with an AI agent that retrieves data fro
 
 ## Architecture
 
-- **API Gateway**: Entry point for all requests
-- **Cloud Run**: Hosts the Python API service with AI agent
-- **Cloud SQL/Firestore**: Database for data storage
-- **GCS**: Storage for logs, artifacts, and AI model data
-- **Terraform**: Infrastructure as Code
+```
+User ──▶ API Gateway ──▶ Cloud Run (FastAPI + AI Agent) ──▶ Cloud SQL
+                                      │                         │
+                                      ▼                         ▼
+                                   Claude ◀───────────── Query Results
+                                      │
+                                      ▼
+                              Response ──▶ GCS (logs)
+```
+
+- **API Gateway**: HTTPS entry point
+- **Cloud Run**: FastAPI + AI Agent (serverless)
+- **Cloud SQL**: PostgreSQL database
+- **GCS**: Query logs storage
+- **Claude**: Natural language ↔ SQL conversion
 
 ## Project Structure
 
