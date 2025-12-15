@@ -1,6 +1,26 @@
 # AI Agent Database Query System
 
-A GCP-based system where users interact with an AI agent that retrieves data from a database.
+An AI-powered API that lets users query databases using natural language. Instead of writing SQL, users ask questions in plain English and get human-readable answers.
+
+## What It Does
+
+**Example:**
+
+```
+User: "Show me the top 5 customers by total orders"
+
+AI Agent:
+1. Converts to SQL: SELECT customer_name, COUNT(*) FROM orders GROUP BY...
+2. Executes query on PostgreSQL
+3. Returns: "Your top 5 customers are: Acme Corp (145 orders), ..."
+```
+
+**Key Features:**
+
+- Natural language to SQL conversion (powered by Claude)
+- Automatic response formatting - raw data becomes readable answers
+- Query logging for audit trails
+- Read-only queries (SELECT only) for safety
 
 ## Architecture
 
@@ -18,6 +38,7 @@ User ──▶ API Gateway ──▶ Cloud Run (FastAPI + AI Agent) ──▶ Cl
 - **Cloud Run**: FastAPI + AI Agent (serverless)
 - **Cloud SQL**: PostgreSQL database
 - **GCS**: Query logs storage
+- **GCR**: Store docker container build for the api or backend 
 - **Claude**: Natural language ↔ SQL conversion
 
 ## Project Structure

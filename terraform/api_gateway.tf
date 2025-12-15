@@ -8,7 +8,7 @@ resource "google_api_gateway_api" "api" {
 resource "google_api_gateway_api_config" "api_config" {
   provider      = google-beta
   api           = google_api_gateway_api.api.api_id
-  api_config_id = "${local.service_name}-config-v1"
+  api_config_id = "${local.service_name}-config-v3"
 
   openapi_documents {
     document {

@@ -22,7 +22,7 @@ paths:
           schema:
             type: object
       x-google-backend:
-        address: ${cloud_run_url}
+        address: ${cloud_run_url}/
   /health:
     get:
       summary: Health check
@@ -33,7 +33,7 @@ paths:
           schema:
             type: object
       x-google-backend:
-        address: ${cloud_run_url}
+        address: ${cloud_run_url}/health
   /query:
     post:
       summary: Process AI agent query
@@ -79,7 +79,7 @@ paths:
         '500':
           description: Internal server error
       x-google-backend:
-        address: ${cloud_run_url}
+        address: ${cloud_run_url}/query
   /queries/{query_id}:
     get:
       summary: Get query result
@@ -101,3 +101,4 @@ paths:
           description: Internal server error
       x-google-backend:
         address: ${cloud_run_url}
+        path_translation: APPEND_PATH_TO_ADDRESS

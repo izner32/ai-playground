@@ -50,6 +50,7 @@ Edit `terraform.tfvars` with your values:
 - Adjust other variables as needed
 
 ### 4. Initialize Terraform Backend
+This is optional. You only do this if you decided to use GCS bucket to store your tfstate file.
 
 ```bash
 terraform init -backend-config="bucket=${GCP_PROJECT_ID}-terraform-state"

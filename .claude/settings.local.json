@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(curl:*)",
+      "Bash(gcloud run services describe:*)",
+      "Bash(gcloud run services logs read:*)",
+      "Bash(gcloud run revisions list:*)",
+      "Bash(gcloud builds list:*)",
+      "Bash(gcloud run deploy:*)",
+      "Bash(gcloud logging read:*)",
+      "Bash(gcloud api-gateway gateways describe:*)",
+      "Bash(terraform plan:*)",
+      "Bash(terraform refresh:*)",
+      "Bash(terraform taint:*)",
+      "Bash(gcloud api-gateway api-configs describe:*)",
+      "Bash(terraform output:*)"
     ],
     "deny": [],
     "ask": []

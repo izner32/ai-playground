@@ -2,6 +2,10 @@
 
 set -e
 
+# Get the script's directory and project root
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 PROJECT_ID=${GCP_PROJECT_ID:-$(gcloud config get-value project)}
 REGION=${REGION:-"us-central1"}
 SERVICE_NAME=${SERVICE_NAME:-"ai-agent-api-dev"}
@@ -21,7 +25,7 @@ if [ -z "$PROJECT_ID" ]; then
 fi
 
 echo "Step 1: Building Docker image..."
-cd "$(dirname "$0")/../api"
+cd "$PROJECT_ROOT/api"
 
 IMAGE_NAME="gcr.io/$PROJECT_ID/$SERVICE_NAME"
 echo "Building image: $IMAGE_NAME"
@@ -29,7 +33,7 @@ echo "Building image: $IMAGE_NAME"
 gcloud builds submit --tag "$IMAGE_NAME" --project "$PROJECT_ID"
 
 echo "Step 2: Deploying to Cloud Run..."
-cd "$(dirname "$0")/../terraform"
+cd "$PROJECT_ROOT/terraform"
 
 if [ ! -f "terraform.tfvars" ]; then
     echo "Error: terraform.tfvars not found"
