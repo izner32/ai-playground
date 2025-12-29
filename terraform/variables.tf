@@ -68,3 +68,9 @@ variable "max_instances" {
   type        = number
   default     = 10
 }
+
+variable "alert_email" {
+  description = "Email address for monitoring alerts"
+  type        = string
+  default     = ""
+}

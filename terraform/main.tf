@@ -58,7 +58,8 @@ resource "google_project_service" "required_apis" {
     "iam.googleapis.com",
     "vpcaccess.googleapis.com",
     "secretmanager.googleapis.com",
-    "generativelanguage.googleapis.com"
+    "generativelanguage.googleapis.com",
+    "monitoring.googleapis.com"
   ])
 
   service            = each.key

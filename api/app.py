@@ -1,17 +1,21 @@
-from fastapi import FastAPI, HTTPException
+import os
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
-import logging
 from datetime import datetime
+import logging
 
 from ai_agent import AIAgent
 from database import DatabaseService
 from storage import StorageService
+from logging_config import setup_logging, get_logger, log_with_context
+from middleware import RequestTracingMiddleware
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+setup_logging(os.getenv("LOG_LEVEL", "INFO"))
+logger = get_logger(__name__)
 
 app = FastAPI(title="AI Agent Database Query API")
+app.add_middleware(RequestTracingMiddleware)
 
 db_service = DatabaseService()
 storage_service = StorageService()
@@ -54,23 +58,40 @@ async def health_check():
 
 
 @app.post("/query", response_model=QueryResponse)
-async def process_query(request: QueryRequest):
+async def process_query(request_body: QueryRequest, request: Request):
     """
     Process user query through AI agent and return results from database
     """
+    request_id = getattr(request.state, "request_id", "unknown")
+
     try:
-        logger.info(f"Processing query: {request.query[:100]}...")
+        log_with_context(
+            logger,
+            logging.INFO,
+            f"Processing query: {request_body.query[:100]}...",
+            request_id=request_id,
+            user_id=request_body.user_id,
+        )
 
         result = await ai_agent.process_query(
-            query=request.query,
-            user_id=request.user_id,
-            context=request.context
+            query=request_body.query,
+            user_id=request_body.user_id,
+            context=request_body.context
         )
 
         await storage_service.log_query(
-            query=request.query,
+            query=request_body.query,
             response=result["response"],
-            user_id=request.user_id
+            user_id=request_body.user_id
+        )
+
+        log_with_context(
+            logger,
+            logging.INFO,
+            "Query processed successfully",
+            request_id=request_id,
+            user_id=request_body.user_id,
+            extra_data={"query_id": result["query_id"], "result_count": result.get("data", {}).get("count", 0)},
         )
 
         return QueryResponse(
@@ -81,10 +102,22 @@ async def process_query(request: QueryRequest):
         )
 
     except ValueError as e:
-        logger.error(f"Validation error: {str(e)}")
+        log_with_context(
+            logger,
+            logging.ERROR,
+            f"Validation error: {str(e)}",
+            request_id=request_id,
+            user_id=request_body.user_id,
+        )
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"Error processing query: {str(e)}")
+        log_with_context(
+            logger,
+            logging.ERROR,
+            f"Error processing query: {str(e)}",
+            request_id=request_id,
+            user_id=request_body.user_id,
+        )
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
