@@ -8,7 +8,7 @@ This guide walks you through deploying the AI Agent Database Query system to GCP
 - `gcloud` CLI installed and authenticated
 - Terraform installed (version >= 1.0)
 - Docker installed (for local testing)
-- Anthropic API key
+- Google Gemini API key
 
 ## Quick Start
 
@@ -46,7 +46,7 @@ cp terraform.tfvars.example terraform.tfvars
 
 Edit `terraform.tfvars` with your values:
 - `project_id`: Your GCP project ID
-- `anthropic_api_key`: Your Anthropic API key
+- `google_api_key`: Your Google Gemini API key
 - Adjust other variables as needed
 
 ### 4. Initialize Terraform Backend
@@ -136,7 +136,7 @@ API Gateway (HTTPS endpoint)
     v
 Cloud Run (Python FastAPI)
     |
-    +-- AI Agent (Claude)
+    +-- AI Agent (Gemini)
     |       |
     |       +-- Generate SQL
     |       +-- Format Response
@@ -155,7 +155,7 @@ cd api
 docker build -t ai-agent-api .
 docker run -p 8080:8080 \
   -e DATABASE_URL="postgresql://user:pass@host/db" \
-  -e ANTHROPIC_API_KEY="your-key" \
+  -e GOOGLE_API_KEY="your-key" \
   -e GCS_BUCKET="your-bucket" \
   ai-agent-api
 ```

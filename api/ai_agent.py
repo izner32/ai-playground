@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 import logging
-from anthropic import Anthropic
+import google.generativeai as genai
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +17,8 @@ class AIAgent:
     def __init__(self, db_service, storage_service):
         self.db_service = db_service
         self.storage_service = storage_service
-        self.client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        self.model = "claude-sonnet-4-5-20250929"
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+        self.model = genai.GenerativeModel("gemini-2.5-flash-preview-05-20")
 
     async def process_query(
         self,
@@ -96,16 +96,14 @@ Query: {user_query}
 Return only the SQL query."""
 
         try:
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=1024,
-                system=system_prompt,
-                messages=[
-                    {"role": "user", "content": user_prompt}
-                ]
+            response = self.model.generate_content(
+                f"{system_prompt}\n\n{user_prompt}",
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=1024,
+                )
             )
 
-            sql_query = message.content[0].text.strip()
+            sql_query = response.text.strip()
             sql_query = sql_query.replace("```sql", "").replace("```", "").strip()
 
             return sql_query
@@ -143,16 +141,14 @@ Results ({len(db_results)} rows):
 Provide a natural language response to the user's question based on these results."""
 
         try:
-            message = self.client.messages.create(
-                model=self.model,
-                max_tokens=2048,
-                system=system_prompt,
-                messages=[
-                    {"role": "user", "content": user_prompt}
-                ]
+            response = self.model.generate_content(
+                f"{system_prompt}\n\n{user_prompt}",
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=2048,
+                )
             )
 
-            return message.content[0].text
+            return response.text
 
         except Exception as e:
             logger.error(f"Error generating response: {str(e)}")

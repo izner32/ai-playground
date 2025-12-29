@@ -1,0 +1,106 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-central1
+  SERVICE_NAME: ai-agent-api
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build and Push Docker image
+        run: |
+          IMAGE_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ai-agent/${{ env.SERVICE_NAME }}-${{ env.ENVIRONMENT }}:${{ github.sha }}"
+          IMAGE_LATEST="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/ai-agent/${{ env.SERVICE_NAME }}-${{ env.ENVIRONMENT }}:latest"
+
+          cd api
+          docker build -t $IMAGE_TAG -t $IMAGE_LATEST .
+          docker push $IMAGE_TAG
+          docker push $IMAGE_LATEST
+
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.0"
+
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init \
+            -backend-config="bucket=${{ env.PROJECT_ID }}-terraform-state" \
+            -backend-config="prefix=terraform/state/${{ env.ENVIRONMENT }}"
+
+      - name: Terraform Plan
+        run: |
+          cd terraform
+          terraform plan \
+            -var="project_id=${{ env.PROJECT_ID }}" \
+            -var="environment=${{ env.ENVIRONMENT }}" \
+            -var="container_image=${{ env.IMAGE_TAG }}" \
+            -var="google_api_key=${{ secrets.GOOGLE_API_KEY }}" \
+            -out=tfplan
+
+      - name: Terraform Apply
+        run: |
+          cd terraform
+          terraform apply -auto-approve tfplan
+
+      - name: Get deployment URL
+        id: deploy-url
+        run: |
+          cd terraform
+          API_URL=$(terraform output -raw api_gateway_endpoint 2>/dev/null || echo "")
+          CLOUD_RUN_URL=$(terraform output -raw cloud_run_url 2>/dev/null || echo "")
+          echo "api_url=$API_URL" >> $GITHUB_OUTPUT
+          echo "cloud_run_url=$CLOUD_RUN_URL" >> $GITHUB_OUTPUT
+
+      - name: Deployment Summary
+        run: |
+          echo "## Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** ${{ env.ENVIRONMENT }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image:** \`${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **API Gateway URL:** ${{ steps.deploy-url.outputs.api_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cloud Run URL:** ${{ steps.deploy-url.outputs.cloud_run_url }}" >> $GITHUB_STEP_SUMMARY

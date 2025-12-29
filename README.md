@@ -17,7 +17,7 @@ AI Agent:
 
 **Key Features:**
 
-- Natural language to SQL conversion (powered by Claude)
+- Natural language to SQL conversion (powered by Gemini)
 - Automatic response formatting - raw data becomes readable answers
 - Query logging for audit trails
 - Read-only queries (SELECT only) for safety
@@ -28,7 +28,7 @@ AI Agent:
 User ──▶ API Gateway ──▶ Cloud Run (FastAPI + AI Agent) ──▶ Cloud SQL
                                       │                         │
                                       ▼                         ▼
-                                   Claude ◀───────────── Query Results
+                                   Gemini ◀───────────── Query Results
                                       │
                                       ▼
                               Response ──▶ GCS (logs)
@@ -39,7 +39,7 @@ User ──▶ API Gateway ──▶ Cloud Run (FastAPI + AI Agent) ──▶ Cl
 - **Cloud SQL**: PostgreSQL database
 - **GCS**: Query logs storage
 - **GCR**: Store docker container build for the api or backend 
-- **Claude**: Natural language ↔ SQL conversion
+- **Gemini**: Natural language ↔ SQL conversion
 
 ## Project Structure
 
@@ -92,4 +92,4 @@ User ──▶ API Gateway ──▶ Cloud Run (FastAPI + AI Agent) ──▶ Cl
 - `GCP_PROJECT_ID` - GCP project ID
 - `DATABASE_URL` - Database connection string
 - `GCS_BUCKET` - GCS bucket name
-- `ANTHROPIC_API_KEY` - API key for Claude (if using Anthropic)
+- `GOOGLE_API_KEY` - API key for Google Gemini
