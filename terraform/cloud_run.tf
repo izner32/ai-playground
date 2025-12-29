@@ -9,8 +9,8 @@ resource "google_project_iam_member" "cloud_run_sql_client" {
   member  = "serviceAccount:${google_service_account.cloud_run_sa.email}"
 }
 
-resource "google_secret_manager_secret" "anthropic_api_key" {
-  secret_id = "${local.service_name}-anthropic-key"
+resource "google_secret_manager_secret" "google_api_key" {
+  secret_id = "${local.service_name}-google-key"
 
   replication {
     auto {}
@@ -19,13 +19,13 @@ resource "google_secret_manager_secret" "anthropic_api_key" {
   labels = local.labels
 }
 
-resource "google_secret_manager_secret_version" "anthropic_api_key" {
-  secret      = google_secret_manager_secret.anthropic_api_key.id
-  secret_data = var.anthropic_api_key
+resource "google_secret_manager_secret_version" "google_api_key" {
+  secret      = google_secret_manager_secret.google_api_key.id
+  secret_data = var.google_api_key
 }
 
-resource "google_secret_manager_secret_iam_member" "anthropic_key_access" {
-  secret_id = google_secret_manager_secret.anthropic_api_key.id
+resource "google_secret_manager_secret_iam_member" "google_key_access" {
+  secret_id = google_secret_manager_secret.google_api_key.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.cloud_run_sa.email}"
 }
@@ -91,10 +91,10 @@ resource "google_cloud_run_v2_service" "api" {
       }
 
       env {
-        name = "ANTHROPIC_API_KEY"
+        name = "GOOGLE_API_KEY"
         value_source {
           secret_key_ref {
-            secret  = google_secret_manager_secret.anthropic_api_key.secret_id
+            secret  = google_secret_manager_secret.google_api_key.secret_id
             version = "latest"
           }
         }

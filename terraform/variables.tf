@@ -45,8 +45,8 @@ variable "database_user" {
   default     = "aiagent"
 }
 
-variable "anthropic_api_key" {
-  description = "Anthropic API key"
+variable "google_api_key" {
+  description = "Google Gemini API key"
   type        = string
   sensitive   = true
 }
