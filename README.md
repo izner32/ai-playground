@@ -98,12 +98,12 @@ User ──▶ API Gateway ──▶ Cloud Run (FastAPI + AI Agent) ──▶ Cl
 
 ### Service Accounts
 
-| Service Account | Purpose |
-|-----------------|---------|
-| `ai-agent-api-dev-sa` | Cloud Run runtime identity |
-| `github-actions-sa` | CI/CD pipeline (via Workload Identity Federation) |
+| Service Account | Purpose | Why needed |
+|-----------------|---------|------------|
+| `ai-agent-api-dev-sa` | Cloud Run runtime identity | Lets the API deployed to Cloud Run access Cloud SQL, secrets, GCS, and other GCP resources |
+| `github-actions-sa` | CI/CD pipeline (via WIF) | Lets GitHub Actions deploy to GCP without storing keys |
 
-### Cloud Run Service Account Roles
+### Cloud Run Service Account Roles (permission for ai-agent-api-dev-sa)
 
 | Role | Resource | Purpose |
 |------|----------|---------|
