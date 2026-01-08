@@ -16,9 +16,8 @@ terraform {
     }
   }
 
-  # Remote state storage - uncomment after bootstrap and run:
-  # terraform init -backend-config="bucket=ai-playground-480714-terraform-state" -backend-config="prefix=terraform/state/dev" -migrate-state
-  # backend "gcs" {}
+  # Remote state storage
+  backend "gcs" {}
 }
 
 provider "google" {
