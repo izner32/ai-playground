@@ -25,7 +25,7 @@ class AIAgent:
         self,
         query: str,
         user_id: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Process user query through AI agent workflow:
@@ -45,9 +45,7 @@ class AIAgent:
             logger.info(f"Database returned {len(db_results)} results")
 
             response_text = await self._generate_response(
-                original_query=query,
-                sql_query=sql_query,
-                db_results=db_results
+                original_query=query, sql_query=sql_query, db_results=db_results
             )
 
             return {
@@ -57,8 +55,8 @@ class AIAgent:
                 "data": {
                     "results": db_results,
                     "count": len(db_results),
-                    "sql_query": sql_query
-                }
+                    "sql_query": sql_query,
+                },
             }
 
         except Exception as e:
@@ -66,9 +64,7 @@ class AIAgent:
             raise
 
     async def _generate_sql_query(
-        self,
-        user_query: str,
-        context: Optional[Dict[str, Any]] = None
+        self, user_query: str, context: Optional[Dict[str, Any]] = None
     ) -> str:
         """
         Use Gemini to convert natural language query to SQL
@@ -115,10 +111,7 @@ Return only the SQL query."""
             raise ValueError(f"Failed to generate SQL query: {str(e)}")
 
     async def _generate_response(
-        self,
-        original_query: str,
-        sql_query: str,
-        db_results: List[Dict[str, Any]]
+        self, original_query: str, sql_query: str, db_results: List[Dict[str, Any]]
     ) -> str:
         """
         Use Gemini to generate natural language response from database results

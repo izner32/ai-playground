@@ -38,10 +38,7 @@ class StorageService:
             return False
 
     async def log_query(
-        self,
-        query: str,
-        response: str,
-        user_id: Optional[str] = None
+        self, query: str, response: str, user_id: Optional[str] = None
     ) -> str:
         """
         Log query and response to GCS
@@ -59,15 +56,14 @@ class StorageService:
                 "timestamp": timestamp.isoformat(),
                 "user_id": user_id,
                 "query": query,
-                "response": response
+                "response": response,
             }
 
             blob_name = f"query_logs/{timestamp.strftime('%Y/%m/%d')}/{log_id}.json"
             blob = self.bucket.blob(blob_name)
 
             blob.upload_from_string(
-                json.dumps(log_data, indent=2),
-                content_type="application/json"
+                json.dumps(log_data, indent=2), content_type="application/json"
             )
 
             logger.info(f"Query logged to GCS: {blob_name}")
@@ -85,7 +81,7 @@ class StorageService:
             return None
 
         try:
-            prefix = f"query_logs/"
+            prefix = "query_logs/"
             blobs = self.bucket.list_blobs(prefix=prefix)
 
             for blob in blobs:
@@ -103,7 +99,7 @@ class StorageService:
         self,
         artifact_name: str,
         data: bytes,
-        content_type: str = "application/octet-stream"
+        content_type: str = "application/octet-stream",
     ) -> str:
         """
         Store arbitrary artifacts in GCS

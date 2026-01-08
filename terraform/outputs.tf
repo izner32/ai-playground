@@ -36,7 +36,7 @@ output "service_account_email" {
 
 output "deployment_instructions" {
   description = "Next steps for deployment"
-  value = <<-EOT
+  value       = <<-EOT
     Deployment Complete!
 
     API Gateway Endpoint: https://${google_api_gateway_gateway.gateway.default_hostname}

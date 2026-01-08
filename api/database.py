@@ -1,10 +1,9 @@
 import os
 import logging
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.pool import NullPool
 from google.cloud.sql.connector import Connector
-import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -106,15 +105,17 @@ class DatabaseService:
             for table_name in inspector.get_table_names():
                 columns = []
                 for column in inspector.get_columns(table_name):
-                    columns.append({
-                        "name": column["name"],
-                        "type": str(column["type"]),
-                        "nullable": column["nullable"]
-                    })
+                    columns.append(
+                        {
+                            "name": column["name"],
+                            "type": str(column["type"]),
+                            "nullable": column["nullable"],
+                        }
+                    )
 
                 schemas[table_name] = {
                     "columns": columns,
-                    "primary_key": inspector.get_pk_constraint(table_name)
+                    "primary_key": inspector.get_pk_constraint(table_name),
                 }
 
             return schemas

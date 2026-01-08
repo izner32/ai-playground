@@ -20,7 +20,15 @@
       "Bash(gcloud api-gateway api-configs list:*)",
       "Bash(gcloud builds submit:*)",
       "Bash(gcloud run services update:*)",
-      "Bash(gcloud run revisions describe:*)"
+      "Bash(gcloud run revisions describe:*)",
+      "Bash(git config:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git stash:*)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch:*)",
+      "Bash(ruff format:*)",
+      "Bash(terraform fmt:*)",
+      "Bash(echo:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []

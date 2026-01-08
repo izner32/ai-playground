@@ -12,8 +12,8 @@ resource "google_sql_database_instance" "main" {
     disk_type         = "PD_SSD"
 
     backup_configuration {
-      enabled            = true
-      start_time         = "03:00"
+      enabled                        = true
+      start_time                     = "03:00"
       point_in_time_recovery_enabled = true
       transaction_log_retention_days = 7
     }

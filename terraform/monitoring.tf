@@ -160,7 +160,7 @@ resource "google_monitoring_dashboard" "cloud_run" {
                     }
                   }
                 }
-                plotType   = "LINE"
+                plotType       = "LINE"
                 legendTemplate = "p50"
               },
               {
@@ -173,7 +173,7 @@ resource "google_monitoring_dashboard" "cloud_run" {
                     }
                   }
                 }
-                plotType   = "LINE"
+                plotType       = "LINE"
                 legendTemplate = "p95"
               },
               {
@@ -186,7 +186,7 @@ resource "google_monitoring_dashboard" "cloud_run" {
                     }
                   }
                 }
-                plotType   = "LINE"
+                plotType       = "LINE"
                 legendTemplate = "p99"
               }
             ]

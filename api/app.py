@@ -50,7 +50,7 @@ async def health_check():
             "status": "healthy" if db_healthy and storage_healthy else "degraded",
             "database": "ok" if db_healthy else "error",
             "storage": "ok" if storage_healthy else "error",
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
@@ -76,13 +76,13 @@ async def process_query(request_body: QueryRequest, request: Request):
         result = await ai_agent.process_query(
             query=request_body.query,
             user_id=request_body.user_id,
-            context=request_body.context
+            context=request_body.context,
         )
 
         await storage_service.log_query(
             query=request_body.query,
             response=result["response"],
-            user_id=request_body.user_id
+            user_id=request_body.user_id,
         )
 
         log_with_context(
@@ -91,14 +91,17 @@ async def process_query(request_body: QueryRequest, request: Request):
             "Query processed successfully",
             request_id=request_id,
             user_id=request_body.user_id,
-            extra_data={"query_id": result["query_id"], "result_count": result.get("data", {}).get("count", 0)},
+            extra_data={
+                "query_id": result["query_id"],
+                "result_count": result.get("data", {}).get("count", 0),
+            },
         )
 
         return QueryResponse(
             response=result["response"],
             data=result.get("data"),
             query_id=result["query_id"],
-            timestamp=result["timestamp"]
+            timestamp=result["timestamp"],
         )
 
     except ValueError as e:
@@ -140,4 +143,5 @@ async def get_query_result(query_id: str):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8080)

@@ -14,7 +14,7 @@ resource "google_api_gateway_api_config" "api_config" {
     document {
       path = "openapi.yaml"
       contents = base64encode(templatefile("${path.module}/openapi.yaml.tpl", {
-        cloud_run_url = google_cloud_run_v2_service.api.uri
+        cloud_run_url   = google_cloud_run_v2_service.api.uri
         service_account = google_service_account.cloud_run_sa.email
       }))
     }
