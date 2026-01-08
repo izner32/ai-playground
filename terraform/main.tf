@@ -16,11 +16,9 @@ terraform {
     }
   }
 
-  # OPTIONAL: Uncomment for remote state storage (recommended for teams)
-  # backend "gcs" {
-  #   # Configure with: terraform init -backend-config="bucket=your-tf-state-bucket"
-  #   prefix = "terraform/state"
-  # }
+  # Remote state storage - uncomment after bootstrap and run:
+  # terraform init -backend-config="bucket=ai-playground-480714-terraform-state" -backend-config="prefix=terraform/state/dev" -migrate-state
+  # backend "gcs" {}
 }
 
 provider "google" {
@@ -59,7 +57,10 @@ resource "google_project_service" "required_apis" {
     "vpcaccess.googleapis.com",
     "secretmanager.googleapis.com",
     "generativelanguage.googleapis.com",
-    "monitoring.googleapis.com"
+    "monitoring.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "cloudbuild.googleapis.com"
   ])
 
   service            = each.key

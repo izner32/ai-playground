@@ -1,5 +1,6 @@
 # Personally added
 /next-steps.txt
+GITHUB_SECRETS.md
 
 # Claude Code local settings
 .claude/settings.local.json

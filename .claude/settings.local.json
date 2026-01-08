@@ -28,7 +28,8 @@
       "Bash(ruff format:*)",
       "Bash(terraform fmt:*)",
       "Bash(echo:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(terraform init:*)"
     ],
     "deny": [],
     "ask": []
