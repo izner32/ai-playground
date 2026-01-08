@@ -36,6 +36,12 @@ resource "google_storage_bucket_iam_member" "cloud_run_storage_access" {
   member = "serviceAccount:${google_service_account.cloud_run_sa.email}"
 }
 
+resource "google_storage_bucket_iam_member" "cloud_run_storage_bucket_reader" {
+  bucket = google_storage_bucket.ai_agent_storage.name
+  role   = "roles/storage.legacyBucketReader"
+  member = "serviceAccount:${google_service_account.cloud_run_sa.email}"
+}
+
 output "storage_bucket_name" {
   description = "GCS bucket name for storage"
   value       = google_storage_bucket.ai_agent_storage.name

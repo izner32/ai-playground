@@ -1,7 +1,8 @@
 # Cloud Monitoring - Basic Alerts for AI Agent API
 
-# Notification channel (email)
+# Notification channel (email) - only created if alert_email is provided
 resource "google_monitoring_notification_channel" "email" {
+  count        = var.alert_email != "" ? 1 : 0
   display_name = "AI Agent Alerts Email"
   type         = "email"
 
@@ -36,7 +37,7 @@ resource "google_monitoring_alert_policy" "high_error_rate" {
     }
   }
 
-  notification_channels = [google_monitoring_notification_channel.email.id]
+  notification_channels = var.alert_email != "" ? [google_monitoring_notification_channel.email[0].id] : []
 
   alert_strategy {
     auto_close = "1800s"
@@ -74,7 +75,7 @@ resource "google_monitoring_alert_policy" "high_latency" {
     }
   }
 
-  notification_channels = [google_monitoring_notification_channel.email.id]
+  notification_channels = var.alert_email != "" ? [google_monitoring_notification_channel.email[0].id] : []
 
   alert_strategy {
     auto_close = "1800s"
@@ -106,7 +107,7 @@ resource "google_monitoring_alert_policy" "service_unavailable" {
     }
   }
 
-  notification_channels = [google_monitoring_notification_channel.email.id]
+  notification_channels = var.alert_email != "" ? [google_monitoring_notification_channel.email[0].id] : []
 
   alert_strategy {
     auto_close = "1800s"

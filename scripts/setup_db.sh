@@ -79,7 +79,10 @@ SELECT 'Database setup completed!' as message;
 EOF
 )
 
-echo "$SQL_SCRIPT" | gcloud sql connect "$INSTANCE_NAME" --user=postgres --quiet
+DB_USER=${DB_USER:-"aiagent"}
+DB_NAME=${DB_NAME:-"aiagent"}
+
+echo "$SQL_SCRIPT" | gcloud sql connect "$INSTANCE_NAME" --user="$DB_USER" --database="$DB_NAME" --quiet
 
 echo ""
 echo "====================================="

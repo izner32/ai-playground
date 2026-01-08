@@ -22,6 +22,10 @@ resource "google_secret_manager_secret" "google_api_key" {
 resource "google_secret_manager_secret_version" "google_api_key" {
   secret      = google_secret_manager_secret.google_api_key.id
   secret_data = var.google_api_key
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "google_secret_manager_secret_iam_member" "google_key_access" {
@@ -33,7 +37,7 @@ resource "google_secret_manager_secret_iam_member" "google_key_access" {
 resource "google_cloud_run_v2_service" "api" {
   name     = local.service_name
   location = var.region
-  ingress  = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+  ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
     service_account = google_service_account.cloud_run_sa.email

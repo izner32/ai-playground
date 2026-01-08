@@ -4,7 +4,8 @@ import uuid
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 import logging
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +18,8 @@ class AIAgent:
     def __init__(self, db_service, storage_service):
         self.db_service = db_service
         self.storage_service = storage_service
-        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-        self.model = genai.GenerativeModel("gemini-2.5-flash-preview-05-20")
+        self.client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+        self.model = "gemini-2.0-flash"
 
     async def process_query(
         self,
@@ -70,7 +71,7 @@ class AIAgent:
         context: Optional[Dict[str, Any]] = None
     ) -> str:
         """
-        Use Claude to convert natural language query to SQL
+        Use Gemini to convert natural language query to SQL
         """
         schema_info = await self.db_service.get_schema_info()
 
@@ -96,11 +97,12 @@ Query: {user_query}
 Return only the SQL query."""
 
         try:
-            response = self.model.generate_content(
-                f"{system_prompt}\n\n{user_prompt}",
-                generation_config=genai.types.GenerationConfig(
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=f"{system_prompt}\n\n{user_prompt}",
+                config=types.GenerateContentConfig(
                     max_output_tokens=1024,
-                )
+                ),
             )
 
             sql_query = response.text.strip()
@@ -119,7 +121,7 @@ Return only the SQL query."""
         db_results: List[Dict[str, Any]]
     ) -> str:
         """
-        Use Claude to generate natural language response from database results
+        Use Gemini to generate natural language response from database results
         """
         system_prompt = """You are a helpful AI assistant that explains database query results to users in a clear, conversational way.
 
@@ -141,11 +143,12 @@ Results ({len(db_results)} rows):
 Provide a natural language response to the user's question based on these results."""
 
         try:
-            response = self.model.generate_content(
-                f"{system_prompt}\n\n{user_prompt}",
-                generation_config=genai.types.GenerationConfig(
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=f"{system_prompt}\n\n{user_prompt}",
+                config=types.GenerateContentConfig(
                     max_output_tokens=2048,
-                )
+                ),
             )
 
             return response.text

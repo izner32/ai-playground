@@ -14,7 +14,13 @@
       "Bash(terraform refresh:*)",
       "Bash(terraform taint:*)",
       "Bash(gcloud api-gateway api-configs describe:*)",
-      "Bash(terraform output:*)"
+      "Bash(terraform output:*)",
+      "Bash(terraform apply:*)",
+      "Bash(terraform import:*)",
+      "Bash(gcloud api-gateway api-configs list:*)",
+      "Bash(gcloud builds submit:*)",
+      "Bash(gcloud run services update:*)",
+      "Bash(gcloud run revisions describe:*)"
     ],
     "deny": [],
     "ask": []
