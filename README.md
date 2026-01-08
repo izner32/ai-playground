@@ -75,11 +75,11 @@ User ──▶ API Gateway ──▶ Cloud Run (FastAPI + AI Agent) ──▶ Cl
 
 ### Alert Policies
 
-| Alert | Condition | Duration |
-|-------|-----------|----------|
-| **High Error Rate** | 5xx errors > 5% of requests | 5 minutes |
-| **High Latency** | p95 response time > 5 seconds | 5 minutes |
-| **Service Unavailable** | No 2xx responses (prod only) | 5 minutes |
+| Alert | Condition | Duration | Meaning |
+|-------|-----------|----------|---------|
+| **High Error Rate** | 5xx errors > 5% of requests | 5 minutes | 5+ out of 100 requests are encountering 5xx errors |
+| **High Latency** | p95 response time > 5 seconds | 5 minutes | 5+ out of 100 requests take over 5 seconds |
+| **Service Unavailable** | No 2xx responses (prod only) | 5 minutes | Service is completely down |
 
 ### Dashboard
 
