@@ -77,10 +77,10 @@ resource "google_project_iam_member" "github_actions_storage" {
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-# Secret Manager Accessor - read secrets during deploy
+# Secret Manager Admin - manage secrets during deploy
 resource "google_project_iam_member" "github_actions_secrets" {
   project = var.project_id
-  role    = "roles/secretmanager.secretAccessor"
+  role    = "roles/secretmanager.admin"
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
@@ -116,6 +116,27 @@ resource "google_project_iam_member" "github_actions_monitoring" {
 resource "google_project_iam_member" "github_actions_service_usage" {
   project = var.project_id
   role    = "roles/serviceusage.serviceUsageConsumer"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+# IAM Admin - manage IAM policies for project resources
+resource "google_project_iam_member" "github_actions_iam_admin" {
+  project = var.project_id
+  role    = "roles/resourcemanager.projectIamAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+# Service Account Admin - manage service accounts
+resource "google_project_iam_member" "github_actions_sa_admin" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions.email}"
+}
+
+# Workload Identity Pool Admin - manage WIF pools
+resource "google_project_iam_member" "github_actions_wif_admin" {
+  project = var.project_id
+  role    = "roles/iam.workloadIdentityPoolAdmin"
   member  = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
